@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101a30">
+<title>GRC Risk Detective | Version 2</title>
+<style>
+:root {
+  --bg:#0b1220; --panel:#141f33; --panel2:#1b2941;
+  --text:#eef4ff; --muted:#a8b7cf; --accent:#55e6a5;
+  --blue:#77a9ff; --red:#ff7777; --border:#30415d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:radial-gradient(ellipse at top,#1b3150,var(--bg) 65%);
+  color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.6;
+}
+header{
+  padding:24px 18px;text-align:center;border-bottom:1px solid var(--border);
+  background:#101a30;
+}
+.brand{font-size:13px;letter-spacing:3px;color:var(--accent);font-weight:800}
+header h1{font-size:clamp(27px,5vw,42px);margin:7px 0}
+header p{margin:0;color:var(--muted)}
+main{max-width:850px;margin:28px auto;padding:0 16px 40px}
+.card{
+  background:rgba(20,31,51,.97);border:1px solid var(--border);
+  border-radius:18px;padding:24px;margin-bottom:18px;
+  box-shadow:0 12px 30px #0002;
+}
+h2,h3{line-height:1.3}
+h2{margin-top:0}
+.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.stat{background:var(--panel2);padding:14px 8px;border-radius:12px;text-align:center}
+.stat strong{display:block;font-size:25px;color:var(--accent)}
+.stat span{font-size:12px;color:var(--muted)}
+label{display:block;font-weight:700;margin:15px 0 6px}
+select,button{
+  width:100%;font:inherit;border-radius:10px;padding:12px;
+}
+select{background:#0b1425;color:var(--text);border:1px solid var(--border)}
+button{border:0;cursor:pointer;font-weight:750;transition:transform .15s,opacity .15s}
+button:hover{transform:translateY(-1px)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.primary{background:var(--accent);color:#082018}
+.secondary{background:var(--panel2);border:1px solid var(--border);color:var(--text)}
+.danger{background:#47232c;color:#ffd6d6;border:1px solid #78404a}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.badge{font-size:12px;background:#23344d;padding:5px 10px;border-radius:30px;color:#dbe8ff}
+.progress-track{height:8px;background:#28364d;border-radius:20px;overflow:hidden;margin:14px 0}
+.progress-bar{height:100%;background:var(--accent);width:0;transition:width .2s}
+.option{
+  display:block;text-align:left;width:100%;margin:10px 0;
+  background:#1a2940;color:var(--text);border:1px solid var(--border);
+  padding:15px;border-radius:12px;
+}
+.option:hover:not(:disabled){border-color:var(--blue);background:#233651}
+.option.correct{border-color:var(--accent);background:#173b32}
+.option.wrong{border-color:var(--red);background:#44252f}
+.option:disabled{opacity:1;cursor:default}
+.feedback{padding:16px;background:#0e192a;border-radius:12px;margin-top:16px}
+.feedback.good{border:1px solid #287c5b}
+.feedback.bad{border:1px solid #8c414b}
+.hidden{display:none!important}
+.small{font-size:13px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+a{color:var(--accent)}
+@media(max-width:500px){
+  .card{padding:17px}.stats{gap:6px}.stat strong{font-size:21px}
+  .actions{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">CYBERSECURITY • RISK • COMPLIANCE</div>
+  <h1>🕵️ GRC Risk Detective</h1>
+  <p>Investigate the risks. Strengthen the controls. Protect the business.</p>
+</header>
+
+<main>
+  <section class="card" id="home">
+    <h2>Welcome, Risk Detective!</h2>
+    <p class="muted">Put your GRC knowledge to the test with realistic workplace scenarios. Choose the best action, learn from the explanation, and build your risk-management skills.</p>
+
+    <div class="stats">
+      <div class="stat"><strong id="bestScore">0</strong><span>Best score</span></div>
+      <div class="stat"><strong id="gamesPlayed">0</strong><span>Games completed</span></div>
+      <div class="stat"><strong id="mastered">0</strong><span>Correct answers</span></div>
+    </div>
+
+    <h3>Configure your challenge</h3>
+    <label for="topic">Choose a topic</label>
+    <select id="topic">
+      <option value="All">All GRC topics</option>
+      <option value="Risk Management">Risk Management</option>
+      <option value="Access Control">Access Control</option>
+      <option value="Third-Party Risk">Third-Party Risk</option>
+      <option value="Incident Response">Incident Response</option>
+      <option value="Compliance">Compliance & Frameworks</option>
+      <option value="IT Audit">IT Audit</option>
+      <option value="Data Protection">Data Protection</option>
+    </select>
+
+    <label for="difficulty">Choose difficulty</label>
+    <select id="difficulty">
+      <option value="All">All difficulty levels</option>
+      <option value="Beginner">Beginner</option>
+      <option value="Intermediate">Intermediate</option>
+      <option value="Advanced">Advanced</option>
+    </select>
+
+    <p class="muted small" id="availableCount">16 scenarios available</p>
+    <button class="primary" id="startBtn">🚀 Start challenge</button>
+
+    <div class="actions">
+      <button class="secondary" id="reviewBtn">📖 Review past mistakes</button>
+      <button class="secondary" id="resetBtn">Reset saved progress</button>
+    </div>
+    <p class="muted small">Progress is saved in this browser on this device. Clearing browser data may erase it.</p>
+  </section>
+
+  <section class="card hidden" id="quiz">
+    <div class="badges">
+      <span class="badge" id="topicBadge"></span>
+      <span class="badge" id="difficultyBadge"></span>
+      <span class="badge" id="numberBadge"></span>
+    </div>
+    <div class="progress-track"><div class="progress-bar" id="progress"></div></div>
+    <p class="muted small" id="scoreLine">Score: 0</p>
+    <h2 id="question"></h2>
+    <p class="muted" id="scenario"></p>
+    <div id="options"></div>
+    <div class="feedback hidden" id="feedback" aria-live="polite"></div>
+    <button class="primary hidden" id="nextBtn" style="margin-top:15px">Next scenario →</button>
+    <button class="secondary" id="quitBtn" style="margin-top:10px">Return to home</button>
+  </section>
+
+  <section class="card hidden" id="results">
+    <h2>🏆 Challenge complete!</h2>
+    <p class="muted">Every scenario is an opportunity to improve your professional judgment.</p>
+    <div class="stats">
+      <div class="stat"><strong id="finalScore">0</strong><span>Points</span></div>
+      <div class="stat"><strong id="finalCorrect">0/0</strong><span>Correct</span></div>
+      <div class="stat"><strong id="finalAccuracy">0%</strong><span>Accuracy</span></div>
+    </div>
+    <h3 id="rank"></h3>
+    <p id="recommendation" class="muted"></p>
+    <h3>Topic performance</h3>
+    <div id="topicResults"></div>
+    <h3>Review this round</h3>
+    <div id="roundReview"></div>
+    <div class="actions">
+      <button class="primary" id="playAgainBtn">Play again</button>
+      <button class="secondary" id="shareBtn">Share achievement</button>
+    </div>
+    <button class="secondary" id="homeBtn" style="margin-top:10px">Back to home</button>
+    <p class="muted small" id="shareStatus" aria-live="polite"></p>
+  </section>
+</main>
+
+<footer>
+  GRC Risk Detective • Independent educational project • Keep learning, keep improving.
+  <br>Practice scenarios are educational examples, not legal or compliance advice.
+</footer>
+
+<script>
+const scenarios = [
+{
+ topic:"Risk Management", difficulty:"Beginner",
+ title:"The unprotected risk register",
+ scenario:"A company identifies a risk that customer data could be exposed because of weak access controls. The risk register has no assigned owner or planned treatment.",
+ question:"What should the GRC analyst do first?",
+ options:[
+  "Delete the risk because no breach has happened",
+  "Assign accountability, assess the risk, and document a treatment plan",
+  "Wait until the annual audit",
+  "Purchase a security product immediately without assessment"
+ ],
+ answer:1,
+ explanation:"A risk needs an accountable owner, an assessment of likelihood and impact, and a documented treatment decision. A control purchase should follow an informed assessment."
+},
+{
+ topic:"Access Control", difficulty:"Beginner",
+ title:"The shared administrator account",
+ scenario:"Five employees use the same administrator account. The team cannot determine which person changed a sensitive system setting.",
+ question:"Which improvement most directly addresses this problem?",
+ options:[
+  "Ask staff to change the shared password every week",
+  "Create individual accounts, restrict privileges, and log activity",
+  "Give every employee administrator access",
+  "Turn off logging to improve performance"
+ ],
+ answer:1,
+ explanation:"Unique identities and least privilege improve accountability. Logging helps investigators trace actions to individual accounts."
+},
+{
+ topic:"Third-Party Risk", difficulty:"Beginner",
+ title:"The new cloud supplier",
+ scenario:"A department wants to upload customer information to a new cloud service. Nobody has reviewed the supplier's security practices.",
+ question:"What is the best next step?",
+ options:[
+  "Approve it because the department needs it",
+  "Conduct proportionate third-party risk due diligence before approval",
+  "Assume the supplier is secure because it is popular",
+  "Transfer all company data to test the service"
+ ],
+ answer:1,
+ explanation:"Third-party due diligence evaluates security, privacy, contractual, operational, and other relevant risks before sensitive data or services are entrusted to a supplier."
+},
+{
+ topic:"Incident Response", difficulty:"Beginner",
+ title:"A suspicious email attachment",
+ scenario:"An employee reports opening an unexpected attachment. Their computer is behaving unusually.",
+ question:"What is the most appropriate response?",
+ options:[
+  "Ignore it unless files are deleted",
+  "Follow the incident-response procedure, alert the security team, and contain the threat as directed",
+  "Forward the attachment to all colleagues",
+  "Delete the email and make no report"
+ ],
+ answer:1,
+ explanation:"Prompt reporting and controlled containment reduce potential harm. Follow the organization's incident-response process and preserve relevant evidence."
+},
+{
+ topic:"Compliance", difficulty:"Beginner",
+ title:"The missing security policy",
+ scenario:"An auditor requests the approved information security policy. Staff can find only an old, unsigned draft.",
+ question:"What should the organization do?",
+ options:[
+  "Present the draft as approved",
+  "Establish the approved version, owner, review date, and evidence of authorization",
+  "Create a fake approval date",
+  "Remove policy management from the audit scope"
+ ],
+ answer:1,
+ explanation:"Controlled documentation should be approved, current, versioned, and attributable to an owner. Missing approval evidence should be reported honestly and remediated."
+},
+{
+ topic:"IT Audit", difficulty:"Beginner",
+ title:"The unverified control",
+ scenario:"A manager says user access is reviewed every month, but provides no review records.",
+ question:"What should the auditor conclude?",
+ options:[
+  "The control is effective because the manager said so",
+  "Request evidence and test the control before concluding",
+  "Automatically declare the whole system compliant",
+  "Ignore the control"
+ ],
+ answer:1,
+ explanation:"Audit conclusions must be supported by sufficient, appropriate evidence. Inquiry alone may not establish that a control operated effectively."
+},
+{
+ topic:"Data Protection", difficulty:"Beginner",
+ title:"The exposed spreadsheet",
+ scenario:"An employee accidentally sends a spreadsheet containing personal data to the wrong external recipient.",
+ question:"What should happen first?",
+ options:[
+  "Hide the incident from management",
+  "Report it promptly through the privacy or incident process and follow containment instructions",
+  "Assume the recipient will delete it",
+  "Wait until the next quarterly meeting"
+ ],
+ answer:1,
+ explanation:"Prompt reporting allows the responsible teams to contain exposure, assess impact, preserve facts, and determine notification obligations under applicable rules."
+},
+{
+ topic:"Risk Management", difficulty:"Intermediate",
+ title:"Choosing which risk to treat",
+ scenario:"Risk A has a low likelihood but could cause a major outage. Risk B is likely but would cause a minor inconvenience.",
+ question:"How should the analyst compare them?",
+ options:[
+  "Always treat whichever risk was reported first",
+  "Assess likelihood, impact, existing controls, and the organization's risk criteria",
+  "Ignore impact and rank by likelihood alone",
+  "Choose the risk with the shortest description"
+ ],
+ answer:1,
+ explanation:"Risk prioritization should follow defined criteria and consider potential consequences, likelihood, existing controls, and business context. A simple likelihood-impact matrix can support, but not replace, judgment."
+},
+{
+ topic:"Access Control", difficulty:"Intermediate",
+ title:"The departing employee",
+ scenario:"An employee leaves the company, but their account remains active in a critical application.",
+ question:"Which control is most relevant?",
+ options:[
+  "A documented joiner-mover-leaver process with timely access revocation",
+  "A longer password expiry period",
+  "More administrator accounts",
+  "A new office security poster"
+ ],
+ answer:0,
+ explanation:"A joiner-mover-leaver process ensures access is granted, changed, and revoked in a timely, authorized manner. Critical accounts should be included in the offboarding process."
+},
+{
+ topic:"Third-Party Risk", difficulty:"Intermediate",
+ title:"The overdue supplier finding",
+ scenario:"A critical supplier has not fixed a high-risk vulnerability by the agreed deadline.",
+ question:"What should the risk owner do?",
+ options:[
+  "Close the finding to improve the dashboard",
+  "Escalate according to risk procedures, assess exposure, and agree on remediation or formally approved risk treatment",
+  "Assume the supplier has fixed it",
+  "Remove the supplier from the inventory"
+ ],
+ answer:1,
+ explanation:"Overdue high-risk findings need visibility and accountable action. Depending on the exposure, actions may include compensating controls, a revised remediation plan, escalation, or an authorized risk acceptance."
+},
+{
+ topic:"Incident Response", difficulty:"Intermediate",
+ title:"The ransomware alert",
+ scenario:"A monitoring system flags possible ransomware activity on a workstation connected to shared business storage.",
+ question:"Which action is most appropriate?",
+ options:[
+  "Wait for the next scheduled scan",
+  "Follow the incident playbook for containment and escalation, preserving evidence where possible",
+  "Delete all logs to stop the alerts",
+  "Announce that the entire network is lost before investigation"
+ ],
+ answer:1,
+ explanation:"A suspected ransomware incident requires prompt triage, escalation, and containment consistent with the playbook. Evidence preservation and coordinated response support investigation and recovery."
+},
+{
+ topic:"Compliance", difficulty:"Intermediate",
+ title:"The control mapping exercise",
+ scenario:"Your team is preparing for an ISO/IEC 27001 audit. A policy exists, but nobody can show how it is implemented in practice.",
+ question:"What would strengthen the evidence?",
+ options:[
+  "A list of policy titles only",
+  "A mapping of applicable requirements to controls, responsible owners, implementation evidence, and testing",
+  "An unsupported statement that all controls work",
+  "A copy of another company's audit report"
+ ],
+ answer:1,
+ explanation:"A useful control mapping connects requirements and risks to implemented controls, owners, and evidence. Testing helps establish whether controls are designed and operating as intended."
+},
+{
+ topic:"IT Audit", difficulty:"Intermediate",
+ title:"The repeated audit finding",
+ scenario:"An access-review finding was marked closed last quarter. This quarter, testing shows the same issue remains.",
+ question:"What is the best response?",
+ options:[
+  "Close it again without investigation",
+  "Reassess remediation evidence, investigate root cause, and escalate repeat failure as appropriate",
+  "Remove the finding from the report",
+  "Blame the auditor for testing it"
+ ],
+ answer:1,
+ explanation:"Repeated findings may indicate ineffective remediation or an unresolved root cause. Validate evidence, revisit corrective actions, and escalate based on severity and governance procedures."
+},
+{
+ topic:"Data Protection", difficulty:"Intermediate",
+ title:"Collecting too much data",
+ scenario:"A new customer registration form requests date of birth, home address, passport number, and other information, although the service may not need all of it.",
+ question:"What should the privacy reviewer recommend?",
+ options:[
+  "Collect all data in case it is useful someday",
+  "Assess the purpose and lawful basis, minimize data collected, and define retention and safeguards",
+  "Publish the data to prove transparency",
+  "Keep the information forever"
+ ],
+ answer:1,
+ explanation:"Data minimization means collecting information that is adequate, relevant, and limited to the stated purpose. Applicable privacy requirements, retention, security, and lawful basis should also be assessed."
+},
+{
+ topic:"Risk Management", difficulty:"Advanced",
+ title:"The risk acceptance request",
+ scenario:"A business executive wants to accept a high residual cybersecurity risk. The potential impact exceeds the organization's normal risk tolerance.",
+ question:"What should the GRC analyst do?",
+ options:[
+  "Record the acceptance without further review",
+  "Escalate through the defined risk governance process and obtain approval from an authorized risk owner",
+  "Change the risk rating to low",
+  "Delete the risk register entry"
+ ],
+ answer:1,
+ explanation:"Risk acceptance must follow delegated authority and the organization's risk appetite and escalation rules. A high risk outside normal tolerance may require senior approval, additional treatment, and documented rationale."
+},
+{
+ topic:"Third-Party Risk", difficulty:"Advanced",
+ title:"The supplier has a certification",
+ scenario:"A vendor provides a security certification and asks to skip your organization's third-party risk assessment.",
+ question:"What is the strongest response?",
+ options:[
+  "Skip all review because certification guarantees security",
+  "Evaluate the certification's scope, validity, and relevance, then assess remaining risks and contractual needs",
+  "Reject all certified suppliers",
+  "Assume the certification covers every service and location"
+ ],
+ answer:1,
+ explanation:"A certification can be useful evidence, but its scope, validity, exclusions, and relevance must be checked. The organization remains responsible for assessing risks associated with the specific service and data."
+},
+{
+ topic:"IT Audit", difficulty:"Advanced",
+ title:"The ineffective compensating control",
+ scenario:"A key automated control is unavailable. Management claims a manual review compensates for it, but no review logs or reviewer sign-offs exist.",
+ question:"What should the auditor do?",
+ options:[
+  "Treat the manual control as effective based on management's statement",
+  "Test whether the manual control is designed appropriately and actually operated, using evidence",
+  "Assume all controls are ineffective across the business",
+  "Remove the automated control from the audit plan"
+ ],
+ answer:1,
+ explanation:"A compensating control must be suitable for the risk and supported by evidence that it operated. If evidence is missing, the auditor should investigate and report the limitation appropriately."
+}
+];
+
+const $ = id => document.getElementById(id);
+const STORAGE_KEY = "grcRiskDetectiveV2";
+let saved = loadSaved();
+let round = [];
+let index = 0;
+let score = 0;
+let correctCount = 0;
+let streak = 0;
+let mistakes = [];
+let answered = false;
+let topicStats = {};
+let reviewMode = false;
+
+function loadSaved(){
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+      best:0, games:0, correct:0, attempted:0, mistakes:[]
+    };
+  } catch(e) {
+    return {best:0,games:0,correct:0,attempted:0,mistakes:[]};
+  }
+}
+function saveSaved(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); }
+  catch(e) { console.warn("Progress could not be saved.",e); }
+}
+function updateHome(){
+  $("bestScore").textContent = saved.best;
+  $("gamesPlayed").textContent = saved.games;
+  $("mastered").textContent = saved.correct;
+  const t = $("topic").value, d = $("difficulty").value;
+  const n = scenarios.filter(s => (t==="All"||s.topic===t) && (d==="All"||s.difficulty===d)).length;
+  $("availableCount").textContent = n+" scenario"+(n===1?"":"s")+" available";
+  $("startBtn").disabled = n===0;
+  $("reviewBtn").disabled = !saved.mistakes.length;
+}
+$("topic").addEventListener("change",updateHome);
+$("difficulty").addEventListener("change",updateHome);
+
+function shuffle(arr){
+  const copy = [...arr];
+  for(let i=copy.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
+function show(section){
+  ["home","quiz","results"].forEach(id=>$(id).classList.toggle("hidden",id!==section));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function startGame(){
+  reviewMode=false;
+  const t=$("topic").value, d=$("difficulty").value;
+  round=shuffle(scenarios.filter(s=>(t==="All"||s.topic===t)&&(d==="All"||s.difficulty===d)));
+  beginRound();
+}
+function startReview(){
+  reviewMode=true;
+  const ids=[...new Set(saved.mistakes)];
+  round=shuffle(scenarios.filter(s=>ids.includes(s.title)));
+  if(!round.length) return;
+  beginRound();
+}
+function beginRound(){
+  index=0;score=0;correctCount=0;streak=0;mistakes=[];topicStats={};
+  show("quiz");renderQuestion();
+}
+function renderQuestion(){
+  answered=false;
+  const s=round[index];
+  $("topicBadge").textContent=s.topic;
+  $("difficultyBadge").textContent=s.difficulty;
+  $("numberBadge").textContent=`Scenario ${index+1} of ${round.length}`;
+  $("progress").style.width=(index/round.length*100)+"%";
+  $("scoreLine").textContent=`Score: ${score} • Correct: ${correctCount}`;
+  $("question").textContent=s.title;
+  $("scenario").textContent=s.scenario+" "+s.question;
+  $("options").innerHTML="";
+  $("feedback").className="feedback hidden";
+  $("nextBtn").classList.add("hidden");
+
+  s.options.forEach((opt,i)=>{
+    const b=document.createElement("button");
+    b.className="option";
+    b.textContent=String.fromCharCode(65+i)+". "+opt;
+    b.addEventListener("click",()=>chooseAnswer(i));
+    $("options").appendChild(b);
+  });
+}
+function chooseAnswer(choice){
+  if(answered)return;
+  answered=true;
+  const s=round[index], isCorrect=choice===s.answer;
+  topicStats[s.topic]??={correct:0,total:0};
+  topicStats[s.topic].total++;
+  saved.attempted++;
+  if(isCorrect){
+    correctCount++;saved.correct++;streak++;
+    score+=100+Math.min(streak-1,5)*10;
+    topicStats[s.topic].correct++;
+  } else {
+    streak=0;
+    mistakes.push({title:s.title,topic:s.topic,chosen:s.options[choice],correct:s.options[s.answer],explanation:s.explanation});
+    if(!saved.mistakes.includes(s.title)) saved.mistakes.push(s.title);
+  }
+  [...$("options").children].forEach((b,i)=>{
+    b.disabled=true;
+    if(i===s.answer)b.classList.add("correct");
+    else if(i===choice)b.classList.add("wrong");
+  });
+  const f=$("feedback");
+  f.className="feedback "+(isCorrect?"good":"bad");
+  const heading=document.createElement("strong");
+  heading.textContent=isCorrect?"✅ Correct!":"❌ Not quite.";
+  const explanation=document.createElement("p");
+  explanation.textContent=s.explanation;
+  const lesson=document.createElement("p");
+  lesson.className="muted small";
+  lesson.textContent="Learning note: In real workplaces, follow approved policies, delegated authority, and applicable legal or regulatory requirements.";
+  f.replaceChildren(heading,explanation,lesson);
+  $("scoreLine").textContent=`Score: ${score} • Correct: ${correctCount}`;
+  $("progress").style.width=((index+1)/round.length*100)+"%";
+  $("nextBtn").textContent=index===round.length-1?"View results →":"Next scenario →";
+  $("nextBtn").classList.remove("hidden");
+}
+function nextQuestion(){
+  if(!answered)return;
+  if(index<round.length-1){index++;renderQuestion();}
+  else finishGame();
+}
+function finishGame(){
+  if(!reviewMode){
+    saved.games++;
+    saved.best=Math.max(saved.best,score);
+    saved.mistakes=[...new Set(saved.mistakes)];
+    saveSaved();
+  }
+  const accuracy=Math.round(correctCount/round.length*100);
+  $("finalScore").textContent=score;
+  $("finalCorrect").textContent=`${correctCount}/${round.length}`;
+  $("finalAccuracy").textContent=accuracy+"%";
+  let rank,rec;
+  if(accuracy>=90){rank="🏆 GRC Mastermind";rec="Excellent work. Challenge yourself with more advanced risk and control scenarios."}
+  else if(accuracy>=75){rank="🥇 Risk Analyst";rec="Strong performance. Review the questions you missed and continue practising."}
+  else if(accuracy>=50){rank="🔎 Risk Investigator";rec="Good start. Review your mistakes and repeat the topics that challenged you."}
+  else {rank="🌱 Junior Risk Detective";rec="Every expert starts somewhere. Study the explanations and try another round."}
+  $("rank").textContent=rank;
+  $("recommendation").textContent=rec;
+  $("topicResults").innerHTML="";
+  Object.entries(topicStats).forEach(([topic,data])=>{
+    const p=document.createElement("p");
+    p.textContent=`${topic}: ${data.correct}/${data.total} correct (${Math.round(data.correct/data.total*100)}%)`;
+    $("topicResults").appendChild(p);
+  });
+  $("roundReview").innerHTML="";
+  if(!mistakes.length){
+    $("roundReview").textContent="Perfect round! You answered every scenario correctly.";
+  } else {
+    mistakes.forEach(m=>{
+      const box=document.createElement("div");box.className="feedback bad";
+      const h=document.createElement("strong");h.textContent=m.title;
+      const p=document.createElement("p");p.textContent="Your answer: "+m.chosen;
+      const c=document.createElement("p");c.textContent="Best answer: "+m.correct;
+      const e=document.createElement("p");e.textContent=m.explanation;
+      box.append(h,p,c,e);$("roundReview").appendChild(box);
+    });
+  }
+  $("progress").style.width="100%";
+  $("shareStatus").textContent="";
+  updateHome();show("results");
+}
+function shareAchievement(){
+  const accuracy=Math.round(correctCount/round.length*100);
+  const message=`I just completed a GRC Risk Detective challenge! 🕵️🛡️\n\nScore: ${score} points\nAccuracy: ${accuracy}%\nRank: ${$("rank").textContent}\n\nI'm practising risk management, IT audit, compliance, and cybersecurity decision-making through interactive scenarios.\n\nTry it here: https://nonnymat.github.io/GRC-risk-detective/\n\n#GRC #Cybersecurity #RiskManagement #Compliance #ITRisk`;
+  if(navigator.share){
+    navigator.share({title:"GRC Risk Detective achievement",text:message})
+      .catch(()=>copyAchievement(message));
+  } else copyAchievement(message);
+}
+async function copyAchievement(message){
+  try {
+    await navigator.clipboard.writeText(message);
+    $("shareStatus").textContent="Achievement copied! Paste it into your LinkedIn post.";
+  } catch(e) {
+    $("shareStatus").textContent="Copy this text into your LinkedIn post:\n"+message;
+  }
+}
+function resetProgress(){
+  if(!confirm("Reset your saved scores, completed games, and mistake history on this device?"))return;
+  saved={best:0,games:0,correct:0,attempted:0,mistakes:[]};
+  saveSaved();updateHome();
+}
+$("startBtn").addEventListener("click",startGame);
+$("reviewBtn").addEventListener("click",startReview);
+$("resetBtn").addEventListener("click",resetProgress);
+$("nextBtn").addEventListener("click",nextQuestion);
+$("quitBtn").addEventListener("click",()=>{updateHome();show("home");});
+$("playAgainBtn").addEventListener("click",startGame);
+$("homeBtn").addEventListener("click",()=>{updateHome();show("home");});
+$("shareBtn").addEventListener("click",shareAchievement);
+updateHome();
+</script>
+</body>
+</html>
